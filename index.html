@@ -24,16 +24,29 @@
 
     label {
       display: block;
-      margin-top: 15px;
       font-weight: bold;
+      margin-bottom: 5px;
     }
 
     input, select, textarea {
       width: 100%;
       padding: 8px;
-      margin-top: 5px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .form-row > div {
+      flex: 1;
+      min-width: 200px;
     }
 
     button {
@@ -108,31 +121,37 @@
   <h2>Timesheet Entry</h2>
 
   <form id="timesheetForm">
-    <label for="date">Date:</label>
-    <input type="date" id="date" required>
+    <div class="form-row">
+      <div>
+        <label for="date">Date:</label>
+        <input type="date" id="date" required>
+      </div>
+      <div>
+        <label for="client">Client:</label>
+        <input type="text" id="client" placeholder="Enter client name" required>
+      </div>
+      <div>
+        <label for="workType">Work Type:</label>
+        <select id="workType" required>
+          <option value="">--Select--</option>
+          <option>Bookkeeping</option>
+          <option>Accounting</option>
+          <option>Audit</option>
+          <option>Taxation</option>
+          <option>Payroll</option>
+          <option>Calling</option>
+        </select>
+      </div>
+      <div>
+        <label for="subClient">Sub Client:</label>
+        <input type="text" id="subClient" placeholder="Enter sub client name">
+      </div>
+    </div>
 
-    <label for="Time">Start Time:</label>
-    <input type="time" id="time" required>
-
-    <label for="client">Client:</label>
-    <input type="text" id="client" placeholder="Enter client name" required>
-
-    <label for="workType">Work Type:</label>
-    <select id="workType" required>
-      <option value="">--Select--</option>
-      <option>Bookkeeping</option>
-      <option>Accounting</option>
-      <option>Audit</option>
-      <option>Taxation</option>
-      <option>Payroll</option>
-      <option>Calling</option>
-    </select>
-
-    <label for="description">Description:</label>
-    <textarea id="description" rows="3" placeholder="Describe the task..." required></textarea>
-
-    <label for="subClient">Sub Client:</label>
-    <input type="text" id="subClient" placeholder="Enter sub client name">
+    <div style="margin-top: 10px;">
+      <label for="description">Description:</label>
+      <textarea id="description" rows="2" placeholder="Describe the task..." required></textarea>
+    </div>
 
     <div class="dropdown">
       <button type="button" class="dropdown-btn">Actions ⌄</button>
