@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Timesheet App</title>
+  <title>Timesheet</title>
   <style>
     body { font-family: Arial; padding: 20px; }
     table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background: #f4f4f4; }
-    input { width: 100%; border: none; }
-    .action-btn { cursor: pointer; color: white; background: #007bff; border: none; padding: 5px 10px; border-radius: 5px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background-color: #f0f0f0; }
+    input { width: 100%; border: none; background: transparent; }
+    .action-btn { background: #007bff; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-<h2>Timesheet App</h2>
+<h2>Online Timesheet (GitHub Compatible)</h2>
+
 <table id="timesheet">
   <thead>
     <tr>
@@ -24,14 +25,15 @@
       <th>Work Type</th>
       <th>Description</th>
       <th>Sub Client</th>
-      <th>Action</th>
     </tr>
   </thead>
-  <tbody>
-  </tbody>
+  <tbody></tbody>
 </table>
+
 <br>
 <button onclick="startTask()" class="action-btn">Start Task</button>
+<button onclick="saveData()" class="action-btn">Save Locally</button>
+<button onclick="loadData()" class="action-btn">Load Saved</button>
 
 <script>
   function getCurrentDateTime() {
@@ -42,37 +44,60 @@
   }
 
   function startTask() {
-    const table = document.getElementById("timesheet").getElementsByTagName("tbody")[0];
+    const table = document.querySelector("#timesheet tbody");
     const { date, time } = getCurrentDateTime();
 
-    // If there’s a previous row, update its end time
+    // Set end time of last row
     const lastRow = table.rows[table.rows.length - 1];
     if (lastRow) {
-      const endTimeCell = lastRow.cells[2];
-      if (!endTimeCell.firstChild.value) {
-        endTimeCell.firstChild.value = time;
+      const endTimeInput = lastRow.cells[2].querySelector("input");
+      if (endTimeInput && !endTimeInput.value) {
+        endTimeInput.value = time;
       }
     }
 
     // Add new row
-    const newRow = table.insertRow();
-    const fields = ['date', 'startTime', 'endTime', 'client', 'workType', 'description', 'subClient'];
+    const row = table.insertRow();
+    const fields = [date, time, '', '', '', '', ''];
 
-    fields.forEach((field, i) => {
-      const cell = newRow.insertCell();
+    for (let i = 0; i < fields.length; i++) {
+      const cell = row.insertCell();
       const input = document.createElement("input");
       input.type = "text";
-
-      // Auto-fill date and start time
-      if (field === 'date') input.value = date;
-      if (field === 'startTime') input.value = time;
-
+      input.value = fields[i];
       cell.appendChild(input);
+    }
+  }
+
+  function saveData() {
+    const rows = document.querySelectorAll("#timesheet tbody tr");
+    const data = [];
+
+    rows.forEach(row => {
+      const inputs = row.querySelectorAll("input");
+      const rowData = Array.from(inputs).map(input => input.value);
+      data.push(rowData);
     });
 
-    // Action column (optional)
-    const actionCell = newRow.insertCell();
-    actionCell.innerHTML = '<button onclick="startTask()" class="action-btn">Start</button>';
+    localStorage.setItem("timesheetData", JSON.stringify(data));
+    alert("Data saved locally!");
+  }
+
+  function loadData() {
+    const data = JSON.parse(localStorage.getItem("timesheetData") || "[]");
+    const table = document.querySelector("#timesheet tbody");
+    table.innerHTML = "";
+
+    data.forEach(rowData => {
+      const row = table.insertRow();
+      rowData.forEach(value => {
+        const cell = row.insertCell();
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = value;
+        cell.appendChild(input);
+      });
+    });
   }
 </script>
 
