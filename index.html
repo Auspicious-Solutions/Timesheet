@@ -1,105 +1,63 @@
-<!DOCTYPE html>
 <html>
 <head>
-  <title>Timesheet</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    th { background-color: #f0f0f0; }
-    input { width: 100%; border: none; background: transparent; }
-    .action-btn { background: #007bff; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
-  </style>
+<?php include 'templates/header.html'; ?>
+<link rel="stylesheet" type="text/css" href="static/css/index_style.css">
 </head>
 <body>
+<?php include 'templates/main_navigation.html'; ?>
+<div class="page_container">
+<?php include 'templates/banner.php'; ?>
 
-<h2>Online Timesheet (GitHub Compatible)</h2>
+<div id="welcome_header" class="jumbotron">
+	<h1>Manage your time<br>Like a <strong>Boss</strong></h1>
+	<span class="glyphicon glyphicon-usd"></span><p style="display: inline;">Save time, money, and heartache</p><br>
+	<span class="glyphicon glyphicon-tree-conifer"></span><p style="display: inline;">Less tree paper, more green paper</p><br>
+	<span class="glyphicon glyphicon-plane"></span><p style="display: inline;">Watch productivity skyrocket</p><br>
+	<p><a class="btn btn-primary btn-lg" href="about.php" role="button">Learn more</a></p>
+</div>
 
-<table id="timesheet">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Start Time</th>
-      <th>End Time</th>
-      <th>Client</th>
-      <th>Work Type</th>
-      <th>Description</th>
-      <th>Sub Client</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<!-- Signup column-->
+<div id="signup_container">
+  <h2>New to Tempus?</h2>
+  <p>Sign up now for instant access</p>
+  <p><a class="btn btn-primary btn-lg" href="php/signup_form.php" role="button">Sign up</a></p>
+</div>
 
-<br>
-<button onclick="startTask()" class="action-btn">Start Task</button>
-<button onclick="saveData()" class="action-btn">Save Locally</button>
-<button onclick="loadData()" class="action-btn">Load Saved</button>
+</div>
+<!-- End page container -->
 
+<!-- Begin page level scripts -->
+<script type="text/javascript" src="static/scripts/script.js"></script>
 <script>
-  function getCurrentDateTime() {
-    const now = new Date();
-    const date = now.toISOString().split("T")[0];
-    const time = now.toTimeString().split(" ")[0];
-    return { date, time };
-  }
+$(document).ready(function(){
 
-  function startTask() {
-    const table = document.querySelector("#timesheet tbody");
-    const { date, time } = getCurrentDateTime();
+  $("#login_form").validate({
+  rules: {
+    password: {
+      required: true,
+      minlength: 6,
+    },
 
-    // Set end time of last row
-    const lastRow = table.rows[table.rows.length - 1];
-    if (lastRow) {
-      const endTimeInput = lastRow.cells[2].querySelector("input");
-      if (endTimeInput && !endTimeInput.value) {
-        endTimeInput.value = time;
-      }
+    email: {
+    required: true,
+    email: true
     }
 
-    // Add new row
-    const row = table.insertRow();
-    const fields = [date, time, '', '', '', '', ''];
-
-    for (let i = 0; i < fields.length; i++) {
-      const cell = row.insertCell();
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = fields[i];
-      cell.appendChild(input);
+  },
+  messages: {
+    password: {
+      required: "Password is a required field",
+      minlength: "Password must be at least 8 characters"
+    },
+    email: {
+    required: "We need your email address to contact you",
+    email: "Your email address must be in the format of name@domain.com"
     }
   }
+  }); //end validation
 
-  function saveData() {
-    const rows = document.querySelectorAll("#timesheet tbody tr");
-    const data = [];
-
-    rows.forEach(row => {
-      const inputs = row.querySelectorAll("input");
-      const rowData = Array.from(inputs).map(input => input.value);
-      data.push(rowData);
-    });
-
-    localStorage.setItem("timesheetData", JSON.stringify(data));
-    alert("Data saved locally!");
-  }
-
-  function loadData() {
-    const data = JSON.parse(localStorage.getItem("timesheetData") || "[]");
-    const table = document.querySelector("#timesheet tbody");
-    table.innerHTML = "";
-
-    data.forEach(rowData => {
-      const row = table.insertRow();
-      rowData.forEach(value => {
-        const cell = row.insertCell();
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = value;
-        cell.appendChild(input);
-      });
-    });
-  }
+});
 </script>
-
 </body>
+<?php include 'templates/footer.html' ?>
 </html>
