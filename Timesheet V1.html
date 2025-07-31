@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Timesheet App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f4f4;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    form, table {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    .dropdown-btn {
+      padding: 10px 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 5px;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      display: block;
+      text-decoration: none;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Timesheet Entry</h2>
+
+  <form id="timesheetForm">
+    <label for="date">Date:</label>
+    <input type="date" id="date" required>
+
+    <label for="client">Client:</label>
+    <input type="text" id="client" placeholder="Enter client name" required>
+
+    <label for="workType">Work Type:</label>
+    <select id="workType" required>
+      <option value="">--Select--</option>
+      <option>Bookkeeping</option>
+      <option>Accounting</option>
+      <option>Audit</option>
+      <option>Taxation</option>
+      <option>Payroll</option>
+    </select>
+
+    <label for="description">Description:</label>
+    <textarea id="description" rows="3" placeholder="Describe the task..." required></textarea>
+
+    <label for="subClient">Sub Client:</label>
+    <input type="text" id="subClient" placeholder="Enter sub client name">
+
+    <div class="dropdown">
+      <button type="button" class="dropdown-btn">Task Actions ⌄</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="startTask()">Start Task</a>
+        <a href="#" onclick="createCopy()">Create Copy</a>
+        <a href="#" onclick="endTask()">End Task</a>
+      </div>
+    </div>
+  </form>
+
+  <h2>Timesheet Records</h2>
+  <table id="timesheetTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Client</th>
+        <th>Work Type</th>
+        <th>Description</th>
+        <th>Sub Client</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('timesheetForm');
+    const tableBody = document.querySelector('#timesheetTable tbody');
+
+    function getFormData() {
+      return {
+        date: document.getElementById('date').value,
+        client: document.getElementById('client').value,
+        workType: document.getElementById('workType').value,
+        description: document.getElementById('description').value,
+        subClient: document.getElementById('subClient').value
+      };
+    }
+
+    function createRow(data) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${data.date}</td>
+        <td>${data.client}</td>
+        <td>${data.workType}</td>
+        <td>${data.description}</td>
+        <td>${data.subClient}</td>
+      `;
+      return row;
+    }
+
+    function startTask() {
+      const data = getFormData();
+      const row = createRow(data);
+      tableBody.insertBefore(row, tableBody.firstChild);
+      form.reset();
+    }
+
+    function createCopy() {
+      const lastRow = tableBody.firstElementChild;
+      if (lastRow) {
+        const cells = lastRow.querySelectorAll('td');
+        document.getElementById('date').value = cells[0].textContent;
+        document.getElementById('client').value = cells[1].textContent;
+        document.getElementById('workType').value = cells[2].textContent;
+        document.getElementById('description').value = cells[3].textContent;
+        document.getElementById('subClient').value = cells[4].textContent;
+        alert("Task copied. You can now edit and click 'Start Task'.");
+      } else {
+        alert("No task to copy.");
+      }
+    }
+
+    function endTask() {
+      alert("Task ended.");
+      form.reset();
+    }
+  </script>
+
+</body>
+</html>
