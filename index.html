@@ -28,7 +28,7 @@
       margin-bottom: 5px;
     }
 
-    input, select, textarea {
+    input, select {
       width: 100%;
       padding: 8px;
       border-radius: 5px;
@@ -47,10 +47,6 @@
     .form-row > div {
       flex: 1;
       min-width: 150px;
-    }
-
-    textarea {
-      resize: vertical;
     }
 
     .dropdown {
@@ -121,14 +117,6 @@
         <input type="date" id="date" required>
       </div>
       <div>
-        <label for="startTime">Start Time:</label>
-        <input type="time" id="startTime" required>
-      </div>
-      <div>
-        <label for="endTime">End Time:</label>
-        <input type="time" id="endTime" required>
-      </div>
-      <div>
         <label for="client">Client:</label>
         <input type="text" id="client" placeholder="Client name" required>
       </div>
@@ -158,8 +146,6 @@
       <button type="button" class="dropdown-btn">Actions ⌄</button>
       <div class="dropdown-content">
         <a href="#" onclick="startTask()">Start Task</a>
-        <a href="#" onclick="createCopy()">Create Copy</a>
-        <a href="#" onclick="endTask()">End Task</a>
       </div>
     </div>
   </form>
@@ -183,12 +169,17 @@
   <script>
     const form = document.getElementById('timesheetForm');
     const tableBody = document.querySelector('#timesheetTable tbody');
+    let lastRow = null;
+
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-GB', { hour12: false });
+    }
 
     function getFormData() {
       return {
         date: document.getElementById('date').value,
-        startTime: document.getElementById('startTime').value,
-        endTime: document.getElementById('endTime').value,
+        startTime: getCurrentTime(),
         client: document.getElementById('client').value,
         workType: document.getElementById('workType').value,
         description: document.getElementById('description').value,
@@ -201,7 +192,7 @@
       row.innerHTML = `
         <td>${data.date}</td>
         <td>${data.startTime}</td>
-        <td>${data.endTime}</td>
+        <td class="end-time"></td>
         <td>${data.client}</td>
         <td>${data.workType}</td>
         <td>${data.description}</td>
@@ -211,32 +202,20 @@
     }
 
     function startTask() {
+      // End previous task
+      if (lastRow) {
+        const endTimeCell = lastRow.querySelector('.end-time');
+        endTimeCell.textContent = getCurrentTime();
+      }
+
+      // Create new task
       const data = getFormData();
       const row = createRow(data);
       tableBody.insertBefore(row, tableBody.firstChild);
-      form.reset();
-    }
+      lastRow = row;
 
-    function createCopy() {
-      const lastRow = tableBody.firstElementChild;
-      if (lastRow) {
-        const cells = lastRow.querySelectorAll('td');
-        document.getElementById('date').value = cells[0].textContent;
-        document.getElementById('startTime').value = cells[1].textContent;
-        document.getElementById('endTime').value = cells[2].textContent;
-        document.getElementById('client').value = cells[3].textContent;
-        document.getElementById('workType').value = cells[4].textContent;
-        document.getElementById('description').value = cells[5].textContent;
-        document.getElementById('subClient').value = cells[6].textContent;
-        alert("Task copied. You can now edit and click 'Start Task'.");
-      } else {
-        alert("No task to copy.");
-      }
-    }
-
-    function endTask() {
-      alert("Task ended.");
       form.reset();
+      document.getElementById('date').value = new Date().toISOString().split('T')[0]; // auto-fill today's date
     }
   </script>
 
